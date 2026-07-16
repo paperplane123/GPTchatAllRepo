@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>微信群信息流助手</title>
+  <style>
+    :root { font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: #162033; background: #f5f7fb; }
+    * { box-sizing: border-box; }
+    body { margin: 0; }
+    header { padding: 32px clamp(20px, 5vw, 72px); background: #111827; color: white; }
+    header h1 { margin: 0 0 8px; font-size: clamp(28px, 4vw, 48px); }
+    header p { margin: 0; color: #cbd5e1; }
+    main { padding: 24px clamp(20px, 5vw, 72px) 56px; }
+    .toolbar { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 18px; }
+    button { border: 0; border-radius: 10px; padding: 11px 16px; font-weight: 700; cursor: pointer; }
+    .primary { background: #2563eb; color: white; }
+    .secondary { background: white; color: #1f2937; border: 1px solid #dbe2ea; }
+    textarea { width: 100%; min-height: 220px; resize: vertical; border: 1px solid #dbe2ea; border-radius: 14px; padding: 16px; font: 14px/1.55 ui-monospace, SFMono-Regular, Menlo, monospace; background: white; }
+    .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; margin: 20px 0; }
+    .stat, .card { background: white; border: 1px solid #e5eaf0; border-radius: 14px; box-shadow: 0 8px 30px rgba(15, 23, 42, .05); }
+    .stat { padding: 16px; }
+    .stat b { display: block; font-size: 28px; margin-top: 4px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+    .card { padding: 18px; }
+    .card h2 { margin: 0 0 12px; font-size: 18px; }
+    ul { margin: 0; padding-left: 20px; }
+    li { margin: 8px 0; line-height: 1.5; }
+    .muted { color: #64748b; }
+    .risk-high { color: #b91c1c; font-weight: 700; }
+    .risk-medium { color: #b45309; font-weight: 700; }
+    #overview { margin: 18px 0; font-size: 17px; font-weight: 700; }
+  </style>
+</head>
+<body>
+<header>
+  <h1>微信群信息流助手</h1>
+  <p>本地解析群聊记录，提取摘要、待办、风险与决策。数据不会自动上传。</p>
+</header>
+<main>
+  <div class="toolbar">
+    <button class="secondary" id="demoBtn">载入演示数据</button>
+    <button class="primary" id="analyzeBtn">开始分析</button>
+  </div>
+  <textarea id="input" aria-label="消息 JSON" placeholder='粘贴 {"messages": [...]} 或消息数组'></textarea>
+  <div id="overview" class="muted">尚未分析。</div>
+  <div id="stats" class="stats"></div>
+  <div class="grid">
+    <section class="card"><h2>重点消息</h2><ul id="highlights"></ul></section>
+    <section class="card"><h2>待办</h2><ul id="actions"></ul></section>
+    <section class="card"><h2>风险</h2><ul id="risks"></ul></section>
+    <section class="card"><h2>已形成决策</h2><ul id="decisions"></ul></section>
+    <section class="card"><h2>未决问题</h2><ul id="questions"></ul></section>
+  </div>
+</main>
+<script>
+const $ = (id) => document.getElementById(id);
+const empty = '<li class="muted">暂无</li>';
+
+function renderList(id, items, formatter = (x) => x) {
+  $(id).innerHTML = items.length ? items.map((item) => `<li>${formatter(item)}</li>`).join('') : empty;
+}
+
+function render(data) {
+  $('overview').textContent = data.overview;
+  $('stats').innerHTML = Object.entries(data.stats).map(([key, value]) => `<div class="stat"><span class="muted">${key}</span><b>${value}</b></div>`).join('');
+  renderList('highlights', data.highlights);
+  renderList('actions', data.actions, (x) => `${x.title}<br><span class="muted">负责人：${x.owner || '待认领'} · 截止：${x.deadline || '未识别'} · 置信度：${Math.round(x.confidence * 100)}%</span>`);
+  renderList('risks', data.risks, (x) => `<span class="risk-${x.level}">[${x.level}]</span> ${x.detail}`);
+  renderList('decisions', data.decisions);
+  renderList('questions', data.questions);
+}
+
+$('demoBtn').onclick = async () => {
+  const response = await fetch('/api/demo');
+  const data = await response.json();
+  render(data);
+  $('input').value = JSON.stringify({messages: [
+    {id:'1', group:'河北中调项目群', sender:'项目经理', timestamp:'2026-07-16 09:00', text:'课题三PPT明天提交，肖工负责补总体架构图。'},
+    {id:'2', group:'河北中调项目群', sender:'肖工', timestamp:'2026-07-16 09:04', text:'我来补，但模型评测数据还有两项未完成。'}
+  ]}, null, 2);
+};
+
+$('analyzeBtn').onclick = async () => {
+  try {
+    const payload = JSON.parse($('input').value || '{}');
+    const response = await fetch('/api/analyze', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload)});
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || '分析失败');
+    render(data);
+  } catch (error) {
+    $('overview').textContent = `错误：${error.message}`;
+  }
+};
+</script>
+</body>
+</html>
