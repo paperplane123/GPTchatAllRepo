@@ -56,17 +56,23 @@
 <script>
 const $ = (id) => document.getElementById(id);
 const empty = '<li class="muted">暂无</li>';
+const escapeHtml = (value) => String(value ?? '').replace(/[&<>"']/g, (char) => ({
+  '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'
+})[char]);
 
-function renderList(id, items, formatter = (x) => x) {
+function renderList(id, items, formatter = (x) => escapeHtml(x)) {
   $(id).innerHTML = items.length ? items.map((item) => `<li>${formatter(item)}</li>`).join('') : empty;
 }
 
 function render(data) {
   $('overview').textContent = data.overview;
-  $('stats').innerHTML = Object.entries(data.stats).map(([key, value]) => `<div class="stat"><span class="muted">${key}</span><b>${value}</b></div>`).join('');
+  $('stats').innerHTML = Object.entries(data.stats).map(([key, value]) => `<div class="stat"><span class="muted">${escapeHtml(key)}</span><b>${Number(value) || 0}</b></div>`).join('');
   renderList('highlights', data.highlights);
-  renderList('actions', data.actions, (x) => `${x.title}<br><span class="muted">负责人：${x.owner || '待认领'} · 截止：${x.deadline || '未识别'} · 置信度：${Math.round(x.confidence * 100)}%</span>`);
-  renderList('risks', data.risks, (x) => `<span class="risk-${x.level}">[${x.level}]</span> ${x.detail}`);
+  renderList('actions', data.actions, (x) => `${escapeHtml(x.title)}<br><span class="muted">负责人：${escapeHtml(x.owner || '待认领')} · 截止：${escapeHtml(x.deadline || '未识别')} · 置信度：${Math.round(Number(x.confidence) * 100)}%</span>`);
+  renderList('risks', data.risks, (x) => {
+    const level = x.level === 'high' ? 'high' : 'medium';
+    return `<span class="risk-${level}">[${level}]</span> ${escapeHtml(x.detail)}`;
+  });
   renderList('decisions', data.decisions);
   renderList('questions', data.questions);
 }
