@@ -1,0 +1,27 @@
+name: Wechat Flow Agent CI
+
+on:
+  push:
+    paths:
+      - "projects/wechat-flow-agent/**"
+      - ".github/workflows/wechat-flow-agent.yml"
+  pull_request:
+    paths:
+      - "projects/wechat-flow-agent/**"
+      - ".github/workflows/wechat-flow-agent.yml"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: projects/wechat-flow-agent
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Run unit tests
+        run: python -m unittest discover -s tests -v
+      - name: Run demo CLI
+        run: python -m wechat_flow_agent.cli demo --json
