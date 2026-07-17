@@ -12,8 +12,27 @@
 
 - 一周方案底稿：[`docs/product-plan-v0.1.md`](docs/product-plan-v0.1.md)
 - 两周原型范围：[`docs/prototype-scope.md`](docs/prototype-scope.md)
+- 专业知识框架：[`docs/domain-knowledge-v0.1.md`](docs/domain-knowledge-v0.1.md)
+- 结构化成因与措施目录：[`data/governance_catalog.v0.1.json`](data/governance_catalog.v0.1.json)
 - 可直接打开的静态交互原型：[`prototype/index.html`](prototype/index.html)
-- 原型结构校验：[`tests/test_structure.py`](tests/test_structure.py)
+- 原型与知识目录校验：[`tests/test_structure.py`](tests/test_structure.py)
+
+## 知识体系
+
+当前知识框架采用五类低电压成因：
+
+1. 电源侧；
+2. 网架侧；
+3. 配变侧；
+4. 用户与负荷侧；
+5. 运行管理侧。
+
+治理措施同时按两套维度组织：
+
+- 业务维度：管理措施、工程措施；
+- 技术维度：源、网、荷、储。
+
+默认治理顺序为：数据与安全校核 → 低成本管理措施 → 轻量工程 → 常规网架与容量改造 → 新型灵活调节技术。该顺序只是初始推荐逻辑，正式项目需由通科及专业人员确认。
 
 ## 产品原则
 
@@ -23,6 +42,7 @@
 4. **AI 不直接替代责任人**：系统输出建议，用户确认后才能生成工单或进入实施流程。
 5. **仿真引擎可替换**：ETAP 是后端适配器之一，产品层不与单一软件绑定。
 6. **结果可追溯**：诊断结论、规则命中、仿真版本、参数和人工修改均保留记录。
+7. **案例先核验再引用**：AI 汇总中的案例名称、治理效果和具体数值在找到原始来源前只作为线索。
 
 ## 运行原型
 
