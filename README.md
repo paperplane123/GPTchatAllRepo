@@ -8,6 +8,7 @@
 - [`projects/wechat-flow-agent`](projects/wechat-flow-agent)：面向中文工作群的本地信息流助手，提取摘要、待办、风险、决策和未决问题。
 - [`projects/etap-low-voltage-agent`](projects/etap-low-voltage-agent)：面向低压配电网问题点的 ETAP 批量仿真、指标校核与治理方案排序 PoC。
 - [`projects/low-voltage-governance-product`](projects/low-voltage-governance-product)：低电压治理智能决策专家的产品方案、交互原型及单点治理闭环设计。
+- [`projects/portable-assistant`](projects/portable-assistant)：用户自有的多模型控制层，支持供应商故障切换、可确认记忆、Markdown Skills 与上下文导出。
 
 ## 仓库约定
 
