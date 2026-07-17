@@ -1,0 +1,26 @@
+{
+  "base_url": "https://127.0.0.1:9443",
+  "token_env": "ETAP_API_TOKEN",
+  "verify_tls": true,
+  "timeout_seconds": 60,
+  "openapi_paths": [
+    "/swagger/v1/swagger.json",
+    "/swagger/swagger.json",
+    "/openapi.json"
+  ],
+  "study_route": null,
+  "study_route_example_only": {
+    "method": "POST",
+    "path": "/REPLACE_WITH_SWAGGER_CONFIRMED_ROUTE",
+    "body": {
+      "project": "${study.project}",
+      "studyCase": "${study.study_case}",
+      "scenario": "${scenario.etap_scenario}"
+    },
+    "result_mapping": {
+      "min_voltage_pu": "REPLACE.response.path.to.minVoltagePu",
+      "max_loading_pct": "REPLACE.response.path.to.maxLoadingPct",
+      "max_unbalance_pct": "REPLACE.response.path.to.maxUnbalancePct"
+    }
+  }
+}
