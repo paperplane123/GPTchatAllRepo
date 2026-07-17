@@ -1,0 +1,27 @@
+{
+  "project": "REPLACE_WITH_PROJECT_NAME",
+  "study_case": "REPLACE_WITH_LOAD_FLOW_STUDY_CASE",
+  "acceptance_limits": {
+    "min_voltage_pu": 0.90,
+    "max_loading_pct": 100.0,
+    "max_unbalance_pct": 15.0
+  },
+  "context": {
+    "revision": "Base",
+    "configuration": "Normal"
+  },
+  "scenarios": [
+    {
+      "id": "baseline",
+      "name": "基准工况",
+      "cost_cny": 0,
+      "etap_scenario": "Baseline"
+    },
+    {
+      "id": "phase-balance",
+      "name": "三相负荷调整",
+      "cost_cny": 20000,
+      "etap_scenario": "PhaseBalance"
+    }
+  ]
+}
