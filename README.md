@@ -6,6 +6,7 @@
 
 - [`projects/sleep-sense`](projects/sleep-sense)：基于 Android 公开传感器 API 的“躺下/睡眠准备姿态”检测与自动化触发 Demo。
 - [`projects/wechat-flow-agent`](projects/wechat-flow-agent)：面向中文工作群的本地信息流助手，提取摘要、待办、风险、决策和未决问题。
+- [`projects/gridfault-copilot`](projects/gridfault-copilot)：OpenAI Build Week 参赛 MVP，面向配电网故障区段排序、可诊断性判断与下一观测建议。
 
 ## 仓库约定
 

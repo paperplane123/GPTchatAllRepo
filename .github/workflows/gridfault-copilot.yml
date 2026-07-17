@@ -1,0 +1,88 @@
+name: GridFault Copilot CI
+
+on:
+  push:
+    paths:
+      - "projects/gridfault-copilot/**"
+      - ".github/workflows/gridfault-copilot.yml"
+  pull_request:
+    paths:
+      - "projects/gridfault-copilot/**"
+      - ".github/workflows/gridfault-copilot.yml"
+
+jobs:
+  smoke-test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: projects/gridfault-copilot
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Compile server
+        run: python -m py_compile server.py
+      - name: Check frontend contract
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          html = Path("index.html").read_text(encoding="utf-8")
+          required = [
+              "GridFault Copilot",
+              'id="caseSelect"',
+              'id="analyzeBtn"',
+              'id="generateBtn"',
+              "/api/explain",
+              "diagnosability",
+          ]
+          missing = [item for item in required if item not in html]
+          if missing:
+              raise SystemExit(f"Missing frontend markers: {missing}")
+          print("Frontend contract OK")
+          PY
+      - name: Start server and run HTTP smoke test
+        run: |
+          python server.py > /tmp/gridfault.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill $SERVER_PID' EXIT
+          python - <<'PY'
+          import json
+          import time
+          import urllib.request
+
+          for _ in range(30):
+              try:
+                  with urllib.request.urlopen("http://127.0.0.1:8787", timeout=1) as response:
+                      assert response.status == 200
+                      assert b"GridFault Copilot" in response.read()
+                  break
+              except Exception:
+                  time.sleep(0.2)
+          else:
+              raise SystemExit("Server did not start")
+
+          payload = {
+              "result": {
+                  "faultType": "Single-phase-to-ground fault",
+                  "topSection": "Section 3",
+                  "confidence": 88,
+                  "diagnosability": "diagnosable",
+                  "evidence": ["test evidence"],
+                  "nextAction": "Validate before isolation",
+              }
+          }
+          request = urllib.request.Request(
+              "http://127.0.0.1:8787/api/explain",
+              data=json.dumps(payload).encode(),
+              headers={"Content-Type": "application/json"},
+              method="POST",
+          )
+          with urllib.request.urlopen(request, timeout=3) as response:
+              body = json.loads(response.read())
+              assert response.status == 200
+              assert body["source"] == "local-fallback"
+              assert "Assessment" in body["text"]
+          print("HTTP smoke test OK")
+          PY
