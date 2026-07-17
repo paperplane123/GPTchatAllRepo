@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "portable-assistant"
+version = "0.1.0"
+description = "A user-owned multi-provider assistant control layer with portable memory and skills."
+readme = "README.md"
+requires-python = ">=3.11"
+authors = [{ name = "paperplane123" }]
+dependencies = []
+
+[project.scripts]
+pa = "portable_assistant.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]

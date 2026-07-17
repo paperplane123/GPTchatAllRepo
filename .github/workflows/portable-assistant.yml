@@ -1,0 +1,42 @@
+name: Portable Assistant CI
+
+on:
+  push:
+    branches:
+      - main
+      - feat/portable-assistant-v0
+    paths:
+      - "projects/portable-assistant/**"
+      - ".github/workflows/portable-assistant.yml"
+  pull_request:
+    paths:
+      - "projects/portable-assistant/**"
+      - ".github/workflows/portable-assistant.yml"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: projects/portable-assistant
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: projects/portable-assistant/pyproject.toml
+      - name: Install package
+        run: python -m pip install -e .
+      - name: Run unit tests
+        run: python -m unittest discover -s tests -v
+      - name: CLI smoke test
+        env:
+          OPENAI_API_KEY: smoke-test-key
+          OPENAI_MODEL: smoke-test-model
+        run: |
+          cp config.example.json config.local.json
+          pa --config config.local.json doctor
+          pa --config config.local.json skills
+          pa --config config.local.json remember --title "CI draft" "This remains a draft."
+          pa --config config.local.json memories --status draft
