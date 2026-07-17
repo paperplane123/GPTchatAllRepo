@@ -1,0 +1,54 @@
+{
+  "acceptance_limits": {
+    "min_voltage_pu": 0.90,
+    "max_loading_pct": 100.0,
+    "max_unbalance_pct": 15.0
+  },
+  "results": [
+    {
+      "id": "baseline",
+      "name": "基准工况",
+      "cost_cny": 0,
+      "min_voltage_pu": 0.842,
+      "max_loading_pct": 118.0,
+      "max_unbalance_pct": 27.0,
+      "source": "sample-data-not-etap"
+    },
+    {
+      "id": "phase-balance",
+      "name": "三相负荷调整",
+      "cost_cny": 20000,
+      "min_voltage_pu": 0.887,
+      "max_loading_pct": 96.0,
+      "max_unbalance_pct": 9.0,
+      "source": "sample-data-not-etap"
+    },
+    {
+      "id": "replace-cable",
+      "name": "低压主干线换线",
+      "cost_cny": 120000,
+      "min_voltage_pu": 0.928,
+      "max_loading_pct": 91.0,
+      "max_unbalance_pct": 18.0,
+      "source": "sample-data-not-etap"
+    },
+    {
+      "id": "phase-balance-plus-cable",
+      "name": "换相并更换低压主干线",
+      "cost_cny": 142000,
+      "min_voltage_pu": 0.941,
+      "max_loading_pct": 89.0,
+      "max_unbalance_pct": 8.0,
+      "source": "sample-data-not-etap"
+    },
+    {
+      "id": "transformer-upgrade",
+      "name": "配变增容",
+      "cost_cny": 260000,
+      "min_voltage_pu": 0.952,
+      "max_loading_pct": 72.0,
+      "max_unbalance_pct": 21.0,
+      "source": "sample-data-not-etap"
+    }
+  ]
+}
