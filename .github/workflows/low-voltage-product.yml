@@ -1,0 +1,25 @@
+name: Low Voltage Product Prototype CI
+
+on:
+  push:
+    paths:
+      - "projects/low-voltage-governance-product/**"
+      - ".github/workflows/low-voltage-product.yml"
+  pull_request:
+    paths:
+      - "projects/low-voltage-governance-product/**"
+      - ".github/workflows/low-voltage-product.yml"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: projects/low-voltage-governance-product
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Validate prototype structure
+        run: python -m unittest discover -s tests -v
