@@ -1,0 +1,293 @@
+{
+  "version": "0.1",
+  "status": "draft",
+  "disclaimer": "阶段性知识目录。措施参数、阈值和案例必须经合作方及专业人员确认后才能用于正式计算或工程决策。",
+  "cause_categories": [
+    {
+      "id": "source_side",
+      "name": "电源侧",
+      "essence": "上级电压与无功支撑不足",
+      "causes": [
+        "10kV母线电压偏低",
+        "调压策略不合理",
+        "上级无功支撑不足",
+        "运行方式变化导致电压支撑下降"
+      ],
+      "evidence": [
+        "多个台区同步出现电压下降",
+        "台区首端电压已偏低",
+        "上级母线电压与末端电压高度相关"
+      ]
+    },
+    {
+      "id": "network_side",
+      "name": "网架侧",
+      "essence": "网络输送能力与供电结构不足",
+      "causes": [
+        "供电半径过长",
+        "导线截面偏小",
+        "低压线路分支过多",
+        "网架联络薄弱",
+        "接点接触电阻异常"
+      ],
+      "evidence": [
+        "电压沿线路逐级下降",
+        "末端用户问题明显而首端相对正常",
+        "电流升高时压降快速增加"
+      ]
+    },
+    {
+      "id": "transformer_side",
+      "name": "配变侧",
+      "essence": "配变容量、档位或运行状态不适应当前负荷",
+      "causes": [
+        "配变容量不足",
+        "长时间重过载",
+        "分接头位置不合理",
+        "配变老化或阻抗异常",
+        "台区负荷分配不合理"
+      ],
+      "evidence": [
+        "问题时段配变负载率显著升高",
+        "低压母线整体下降",
+        "调档或负荷转移后明显改善"
+      ]
+    },
+    {
+      "id": "load_side",
+      "name": "用户与负荷侧",
+      "essence": "负荷增长、相别分配或用户用电特性导致电压下降",
+      "causes": [
+        "空调、充电或生产设备集中启动",
+        "单相负荷集中造成三相不平衡",
+        "大功率冲击性负荷",
+        "用户侧线路过长或线径过小",
+        "表后问题被误判为供电侧问题"
+      ],
+      "evidence": [
+        "问题与特定用户或时段高度相关",
+        "单相电压显著低于另外两相",
+        "用户表前合格但表后不合格"
+      ]
+    },
+    {
+      "id": "operations_side",
+      "name": "运行管理侧",
+      "essence": "调控、运维和数据治理不到位",
+      "causes": [
+        "无功补偿投切不合理",
+        "分接头未按负荷变化调整",
+        "三相负荷未及时调整",
+        "运行方式未优化",
+        "设备缺陷或虚接未及时发现",
+        "台账、拓扑和量测不一致"
+      ],
+      "evidence": [
+        "运行调整后问题明显改善",
+        "实际拓扑与系统台账不一致",
+        "现场发现接点发热或虚接",
+        "问题处理后反复发生"
+      ]
+    }
+  ],
+  "measures": [
+    {
+      "id": "tap_adjustment",
+      "name": "配变分接头调整",
+      "class": "management",
+      "source_grid_load_storage": ["source", "transformer"],
+      "priority_level": 1,
+      "applicable_when": ["台区首端整体偏低", "档位存在调整余量"],
+      "requires": ["轻载电压校核", "分接头状态确认"],
+      "benefits": ["成本低", "见效快"],
+      "risks": ["轻载时可能电压偏高"],
+      "permanent": false
+    },
+    {
+      "id": "phase_balancing",
+      "name": "三相负荷调整",
+      "class": "management",
+      "source_grid_load_storage": ["load"],
+      "priority_level": 1,
+      "applicable_when": ["三相不平衡明显", "单相负荷集中"],
+      "requires": ["用户相别数据", "调整后负荷校核"],
+      "benefits": ["投资低", "针对性强"],
+      "risks": ["相别数据不准会降低效果"],
+      "permanent": false
+    },
+    {
+      "id": "reactive_optimization",
+      "name": "无功与上级电压优化",
+      "class": "management",
+      "source_grid_load_storage": ["source", "grid"],
+      "priority_level": 1,
+      "applicable_when": ["多台区同步偏低", "功率因数偏低或无功不足"],
+      "requires": ["区域电压与无功校核"],
+      "benefits": ["可改善区域电压", "降低电流和损耗"],
+      "risks": ["不合理投切可能造成局部过电压"],
+      "permanent": false
+    },
+    {
+      "id": "load_transfer",
+      "name": "负荷转供与运行方式优化",
+      "class": "management",
+      "source_grid_load_storage": ["grid"],
+      "priority_level": 1,
+      "applicable_when": ["相邻台区存在容量余量", "具备联络或转供条件"],
+      "requires": ["转供后全网校核"],
+      "benefits": ["快速释放重载"],
+      "risks": ["可能转移问题至相邻台区"],
+      "permanent": false
+    },
+    {
+      "id": "defect_elimination",
+      "name": "缺陷消除与虚接紧固",
+      "class": "management",
+      "source_grid_load_storage": ["grid", "operations"],
+      "priority_level": 1,
+      "applicable_when": ["接点发热", "接触电阻异常", "设备缺陷"],
+      "requires": ["现场巡检"],
+      "benefits": ["应优先处理", "成本较低"],
+      "risks": ["必须确认停电和作业安全条件"],
+      "permanent": true
+    },
+    {
+      "id": "local_conductor_upgrade",
+      "name": "局部导线升级",
+      "class": "engineering",
+      "source_grid_load_storage": ["grid"],
+      "priority_level": 2,
+      "applicable_when": ["局部区段压降大", "导线截面偏小"],
+      "requires": ["线路长度与截面实测", "施工通道", "停电计划"],
+      "benefits": ["直接降低线路压降"],
+      "risks": ["若配变容量不足则需同步治理"],
+      "permanent": true
+    },
+    {
+      "id": "transformer_capacity_upgrade",
+      "name": "配变增容",
+      "class": "engineering",
+      "source_grid_load_storage": ["transformer"],
+      "priority_level": 3,
+      "applicable_when": ["配变重过载是主要瓶颈"],
+      "requires": ["低压线路载流能力校核", "设备与施工条件"],
+      "benefits": ["释放容量", "适应负荷增长"],
+      "risks": ["线路压降问题可能仍然存在"],
+      "permanent": true
+    },
+    {
+      "id": "new_transformer_site",
+      "name": "新增配变布点",
+      "class": "engineering",
+      "source_grid_load_storage": ["grid", "transformer"],
+      "priority_level": 3,
+      "applicable_when": ["供电半径长", "负荷密集", "现有配变增容仍不足"],
+      "requires": ["设备用地", "报建与通道条件"],
+      "benefits": ["缩短供电半径", "电压裕度大"],
+      "risks": ["投资和协调周期较高"],
+      "permanent": true
+    },
+    {
+      "id": "transformer_area_split",
+      "name": "重载台区切割与网架优化",
+      "class": "engineering",
+      "source_grid_load_storage": ["grid", "transformer"],
+      "priority_level": 3,
+      "applicable_when": ["台区规模过大", "供电范围不合理"],
+      "requires": ["用户与网架重构方案", "停电与切改计划"],
+      "benefits": ["降低单台区负担", "改善供电结构"],
+      "risks": ["涉及范围较大"],
+      "permanent": true
+    },
+    {
+      "id": "distribution_storage",
+      "name": "台区储能",
+      "class": "engineering",
+      "source_grid_load_storage": ["storage"],
+      "priority_level": 4,
+      "applicable_when": ["峰值持续时间集中", "扩容困难", "存在保供或多目标需求"],
+      "requires": ["容量与功率配置", "控制策略", "寿命与收益评估"],
+      "benefits": ["削峰", "辅助调压", "应急保供"],
+      "risks": ["成本、寿命和收益机制约束"],
+      "permanent": false
+    },
+    {
+      "id": "flexible_interconnection",
+      "name": "柔性互联或柔性直流",
+      "class": "engineering",
+      "source_grid_load_storage": ["grid"],
+      "priority_level": 4,
+      "applicable_when": ["相邻台区负载差异大", "传统联络受限", "多目标调节需求"],
+      "requires": ["控制与保护方案", "设备容量校核"],
+      "benefits": ["动态转移功率", "提高网架灵活性"],
+      "risks": ["投资和控制复杂度高"],
+      "permanent": true
+    },
+    {
+      "id": "grid_forming_storage",
+      "name": "构网型储能",
+      "class": "engineering",
+      "source_grid_load_storage": ["source", "storage"],
+      "priority_level": 4,
+      "applicable_when": ["弱网", "主动电压支撑", "韧性或孤网运行需求"],
+      "requires": ["系统级稳定性研究", "保护与控制协同"],
+      "benefits": ["主动电压支撑", "提升系统韧性"],
+      "risks": ["不应作为普通低电压点默认方案"],
+      "permanent": false
+    }
+  ],
+  "priority_levels": [
+    {
+      "level": 0,
+      "name": "数据与安全校核",
+      "description": "确认真实低电压，排除表后问题、量测异常和设备缺陷，并优先处理安全与重要用户保供。"
+    },
+    {
+      "level": 1,
+      "name": "零成本或低成本管理措施",
+      "description": "调档、缺陷消除、三相调整、无功优化、运行方式调整。"
+    },
+    {
+      "level": 2,
+      "name": "轻量工程措施",
+      "description": "局部换线、分支优化、局部补偿和电能质量治理。"
+    },
+    {
+      "level": 3,
+      "name": "常规网架与容量改造",
+      "description": "增容、新增布点、缩短供电半径、台区切割和网架联络优化。"
+    },
+    {
+      "level": 4,
+      "name": "新型灵活调节技术",
+      "description": "储能、光储协同、柔性互联、柔性直流和构网型储能。"
+    }
+  ],
+  "case_leads": [
+    {
+      "location": "四川蓬溪施杆嘴村",
+      "technology": "增容改造",
+      "verification_status": "unverified"
+    },
+    {
+      "location": "四川宜宾石坎村",
+      "technology": "光伏与储能",
+      "verification_status": "unverified"
+    },
+    {
+      "location": "四川内江中棚村",
+      "technology": "柔性直流调压",
+      "verification_status": "unverified"
+    },
+    {
+      "location": "云南宣威落水片区",
+      "technology": "网架优化",
+      "verification_status": "unverified"
+    },
+    {
+      "location": "山西临汾",
+      "technology": "低电压智能诊断平台",
+      "verification_status": "unverified"
+    }
+  ]
+}
