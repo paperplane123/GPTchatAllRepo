@@ -14,6 +14,9 @@
 - 两周原型范围：[`docs/prototype-scope.md`](docs/prototype-scope.md)
 - 专业知识框架：[`docs/domain-knowledge-v0.1.md`](docs/domain-knowledge-v0.1.md)
 - 结构化成因与措施目录：[`data/governance_catalog.v0.1.json`](data/governance_catalog.v0.1.json)
+- 软硬一体机选型：[`docs/hardware-selection-v0.1.md`](docs/hardware-selection-v0.1.md)
+- 华强北询价与验收清单：[`docs/huaqiangbei-purchase-checklist.md`](docs/huaqiangbei-purchase-checklist.md)
+- 可编辑采购 BOM：[`data/hardware_bom.v0.1.csv`](data/hardware_bom.v0.1.csv)
 - 可直接打开的静态交互原型：[`prototype/index.html`](prototype/index.html)
 - 原型与知识目录校验：[`tests/test_structure.py`](tests/test_structure.py)
 
@@ -34,6 +37,21 @@
 
 默认治理顺序为：数据与安全校核 → 低成本管理措施 → 轻量工程 → 常规网架与容量改造 → 新型灵活调节技术。该顺序只是初始推荐逻辑，正式项目需由通科及专业人员确认。
 
+## 硬件样机
+
+第一台硬件定义为华强北可快速集成的 **15.6 英寸手提箱式展示/验证终端**：
+
+- 32GB+1TB x86 迷你主机；
+- Windows 11 Pro；
+- 15.6 英寸 1080P 电容触摸屏；
+- 隔离 USB-RS485；
+- Modbus 安全模拟器；
+- 三色状态灯、三个实体按键和旋钮；
+- 可选外接三相导轨采集箱；
+- 主控制台内不暴露 220/380V 接线。
+
+样机目标预算为 5500—7500 元，加真实三相采集箱后约 6500—9000 元。第一台只验证产品形态和采集闭环，不等同于可直接部署的生产级现场终端。
+
 ## 产品原则
 
 1. **用户先于技术**：用户看到的是问题、依据、建议、效果和工单，而不是 ETAP、模型或程序细节。
@@ -43,6 +61,7 @@
 5. **仿真引擎可替换**：ETAP 是后端适配器之一，产品层不与单一软件绑定。
 6. **结果可追溯**：诊断结论、规则命中、仿真版本、参数和人工修改均保留记录。
 7. **案例先核验再引用**：AI 汇总中的案例名称、治理效果和具体数值在找到原始来源前只作为线索。
+8. **展示机与现场设备分离**：高压/市电采集放在独立防护箱，由有资质人员接线；主机只接隔离通信接口。
 
 ## 运行原型
 
