@@ -7,6 +7,7 @@
 - [`projects/sleep-sense`](projects/sleep-sense)：基于 Android 公开传感器 API 的“躺下/睡眠准备姿态”检测与自动化触发 Demo。
 - [`projects/wechat-flow-agent`](projects/wechat-flow-agent)：面向中文工作群的本地信息流助手，提取摘要、待办、风险、决策和未决问题。
 - [`projects/etap-low-voltage-agent`](projects/etap-low-voltage-agent)：面向低压配电网问题点的 ETAP 批量仿真、指标校核与治理方案排序 PoC。
+- [`projects/low-voltage-governance-product`](projects/low-voltage-governance-product)：低电压治理智能决策专家的产品方案、交互原型及单点治理闭环设计。
 
 ## 仓库约定
 
