@@ -15,7 +15,6 @@
           <button
             id="WpsMacReaderRelock"
             label="重新锁定编辑"
-            imageMso="ProtectDocument"
             onAction="ReapplyReadOnlyLock"
             screentip="再次禁止阅读版式中的正文编辑"/>
           <button
