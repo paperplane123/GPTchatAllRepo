@@ -1,20 +1,46 @@
-# WPS Mac 纯阅读加载项
+# WPS Mac 严格只读阅读加载项
 
-> 状态：实验性 V0.1.0。代码和安装结构已完成静态校验，但尚未在用户的具体 WPS Mac 构建上完成真机验证；尤其是隐藏命令 `ViewFullScreenReadingView` 是否生效，取决于该构建是否保留对应实现。
+> 状态：实验性 V0.2.0。已针对“选项卡存在但按钮无响应”的 Mac 兼容问题重构回调，并新增不依赖 JavaScript 的 WPS 原生命令备用入口。仍需在具体 WPS Mac 构建上完成真机验证。
 
-这是一个面向 **WPS 文字 Mac 版** 的轻量加载项，解决没有明显“纯阅读模式”入口的问题。
+这个加载项的目标不是另做一个抽取正文的阅读器，而是让**当前 WPS 文字文档进入不可编辑的阅读版式**：保留原文档页面、图片、表格、公式和排版，只改变当前窗口的查看状态。
 
-## 功能
+## 行为边界
 
-- **原生阅读**：尝试调用 WPS 内置隐藏命令 `ViewFullScreenReadingView`。
-- **纯阅读器兜底**：原生命令不工作时，在 WPS 侧边任务窗格中读取当前文档正文。
-- 阅读器支持：
-  - 浅色、米黄、深色三种主题；
-  - 字号、行距、正文宽度调节；
-  - 按标题/大纲级别生成目录；
-  - 一键重新读取当前文档；
-  - `Esc` 关闭阅读器。
-- 加载项只读取文档，不修改正文。
+进入严格只读阅读后：
+
+- 使用 WPS 自身的阅读版式显示当前文档；
+- 设置 `ReadingLayoutAllowEditing = false`，禁止在阅读版式里修改正文；
+- 不添加文档保护，不设置密码；
+- 不保存文档，不修改正文和格式；
+- 退出阅读后恢复普通页面视图，原文档继续可编辑。
+
+这属于**窗口级临时只读状态**，不是永久加密或文档权限控制。
+
+## 功能区
+
+### 严格只读
+
+- **进入只读阅读**：切换到阅读版式，并显式禁止编辑；
+- **重新锁定编辑**：若某个 WPS 构建在阅读过程中重新开放编辑，可再次应用禁止编辑属性；
+- **退出只读阅读**：恢复普通页面视图。
+
+### 原生命令备用
+
+直接嵌入 WPS 内置的：
+
+- `ViewFullScreenReadingView`；
+- `ViewPrintLayoutView`。
+
+这两个按钮不经过加载项 JavaScript。即使 Mac 构建无法执行自定义回调，原生命令仍有机会正常工作。
+
+## V0.2.0 修复
+
+V0.1.0 在部分 Mac 构建中可能出现选项卡正常显示、所有自定义按钮却没有响应。V0.2.0 修复了两处高风险兼容问题：
+
+1. 同时兼容 `Application`、`wps.Application` 和 `wps` 三种根对象暴露方式；
+2. 删除 `main.js` 对标准浏览器 `window` 对象的强依赖，避免隐藏加载页初始化失败。
+
+同时移除了原来的“纯文本任务窗格阅读器”。它不符合“在原文档上只读阅读”的目标。
 
 ## 目录结构
 
@@ -27,81 +53,56 @@ wps-mac-reader-addon/
 │   └── validate.mjs
 └── package/
     ├── publish.xml
-    └── WPS_MAC_READER_0.1.0/
+    └── WPS_MAC_READER_0.2.0/
         ├── main.js
-        ├── ribbon.xml
-        ├── reader.html
-        ├── reader.css
-        └── reader.js
+        └── ribbon.xml
 ```
 
-WPS 加载项启动时会自动生成 `index.html` 并加载 `main.js`，因此包内故意不放 `index.html`。
+WPS 加载项启动时会自动生成 `index.html` 并加载 `main.js`，因此包内不放 `index.html`。
 
-## 安装
+## 升级或安装
 
-安装前先完全退出 WPS，包括所有 WPS 文字窗口。
-
-### 从 GitHub 一行安装
-
-终端粘贴以下命令。它使用 Git 稀疏克隆，只检出这个插件目录，安装完成后删除临时下载文件：
+先按 `Command + Q` 完全退出 WPS，再在终端执行：
 
 ```bash
 ( TMP_DIR="$(mktemp -d)"; trap 'rm -rf "$TMP_DIR"' EXIT; git clone --depth 1 --filter=blob:none --sparse https://github.com/paperplane123/GPTchatAllRepo.git "$TMP_DIR/repo" && git -C "$TMP_DIR/repo" sparse-checkout set projects/wps-mac-reader-addon && bash "$TMP_DIR/repo/projects/wps-mac-reader-addon/install.sh" )
 ```
 
-### 已下载仓库时安装
-
-1. 在终端进入本项目目录。
-2. 执行：
-
-```bash
-chmod +x install.sh uninstall.sh
-./install.sh
-```
-
-安装后重新打开 WPS 文字，功能区中应出现 **“纯阅读”** 选项卡。
-
 安装脚本会：
 
-- 将插件文件复制到：
+- 备份现有 `publish.xml`；
+- 删除本插件的旧注册记录；
+- 删除 `WPS_MAC_READER_0.1.0` 等旧版本目录，防止 WPS 读取旧脚本缓存；
+- 安装 V0.2.0；
+- 保留其他加载项配置和目录。
+
+安装位置：
 
 ```text
 ~/Library/Containers/com.kingsoft.wpsoffice.mac/Data/.kingsoft/wps/jsaddons/
 ```
 
-- 保留并备份已有 `publish.xml`；
-- 删除本插件的旧配置，再写入 V0.1.0 配置；
-- 不触碰其他加载项的文件。
+重新打开 WPS 文字后，使用：
 
-## 使用
-
-### 原生阅读
-
-点击 **纯阅读 → 原生阅读**。
-
-加载项会执行：
-
-```javascript
-Application.CommandBars.ExecuteMso("ViewFullScreenReadingView")
+```text
+纯阅读 → 进入只读阅读
 ```
 
-如果当前 WPS Mac 构建没有实现该命令，加载项会自动尝试打开兜底阅读器；若 WPS 静默忽略命令，可直接点击 **打开阅读器**。
+如果这个按钮仍无响应，先测试右侧：
 
-### 兜底阅读器
-
-点击 **纯阅读 → 打开阅读器**。
-
-阅读器会逐段读取 `ActiveDocument.Paragraphs`，使用段落 `OutlineLevel` 或标题样式生成目录。表格、文本框、公式和浮动对象目前只做降级文本展示，不追求原版式还原。
+```text
+原生命令备用 → 阅读版式
+```
 
 ## 卸载
 
-完全退出 WPS 后执行：
+完全退出 WPS 后，在项目目录执行：
 
 ```bash
 ./uninstall.sh
 ```
 
-脚本会删除插件目录，并从 `publish.xml` 中移除本插件配置。
+脚本会从 `publish.xml` 移除注册记录，并删除本插件的所有历史版本目录。
 
 ## 静态校验
 
@@ -113,22 +114,23 @@ npm test
 
 校验内容包括：
 
-- 必需文件是否存在；
-- JavaScript 语法；
-- `publish.xml` 的插件名称、类型、版本；
-- `ribbon.xml` 的按钮回调是否在 `main.js` 中实现；
-- 安装和卸载脚本 Shell 语法。
+- V0.2.0 必需文件和 manifest；
+- JavaScript 与 Shell 语法；
+- 严格只读回调是否存在；
+- 是否显式设置 `ReadingLayoutAllowEditing = false`；
+- 是否兼容 `wps.Application`；
+- 是否错误依赖 `window`；
+- 是否提供不依赖 JavaScript 的原生命令入口；
+- 安装时是否清理旧版本缓存目录。
 
 ## 已知边界
 
-- 未在所有 Intel / Apple Silicon 和不同 WPS Mac 版本上验证。
-- Mac 版 WPS 目前通常不能依赖 58890 端口完成网页一键安装，因此采用本地离线目录安装。
-- WPS 若完全不暴露任务窗格或文档对象接口，兜底阅读器会显示错误说明，不会修改文档。
-- 超长文档默认最多读取 5000 个段落，避免任务窗格无响应。
-- 当前不渲染图片、批注、脚注、页眉页脚和复杂表格布局。
+- `ReadingLayoutAllowEditing` 是 WPS 官方公开的阅读版式属性，但不同 Mac 构建的实现完整度仍需真机验证。
+- 如果某个构建连 WPS 自身的 `ViewFullScreenReadingView` 都没有实现，则加载项无法凭空补出原生阅读版式。
+- 本加载项不会使用 `Document.Protect` 强行保护文档，因为那可能改变文档安全状态并被自动保存；这里只做可随时退出的窗口级只读阅读。
 
 ## 设计依据
 
-- WPS 加载项由 `ribbon.xml` 和网页脚本组成，启动时自动创建 `index.html` 并引入 `main.js`。
-- WPS 文字的官方 idMso 列表包含 `ViewFullScreenReadingView`、`ProtectEyes` 等命令。
-- WPS Mac 支持加载项能力，但离线部署通常需要手工写入沙盒目录下的 `jsaddons/publish.xml`。
+- WPS `View` 对象公开 `ReadingLayoutAllowEditing`、`ReadingLayout`、`Type` 等阅读版式接口；
+- WPS 文字的官方 idMso 列表包含 `ViewFullScreenReadingView` 和 `ViewPrintLayoutView`；
+- WPS 加载项通过 `ribbon.xml` 和自动加载的 `main.js` 提供自定义功能区逻辑。
