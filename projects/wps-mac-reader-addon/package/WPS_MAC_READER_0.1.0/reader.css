@@ -89,6 +89,7 @@ a:focus-visible {
   justify-content: space-between;
   gap: 12px;
   padding: 8px 10px;
+  background: var(--surface);
   background: color-mix(in srgb, var(--surface) 94%, transparent);
   border-bottom: 1px solid var(--border);
   backdrop-filter: blur(14px);
