@@ -2,10 +2,7 @@
 set -euo pipefail
 
 PLUGIN_NAME="WPS_MAC_READER"
-PLUGIN_VERSION="0.1.0"
-PLUGIN_FOLDER="${PLUGIN_NAME}_${PLUGIN_VERSION}"
 ADDON_ROOT="${HOME}/Library/Containers/com.kingsoft.wpsoffice.mac/Data/.kingsoft/wps/jsaddons"
-DEST_DIR="${ADDON_ROOT}/${PLUGIN_FOLDER}"
 PUBLISH_FILE="${ADDON_ROOT}/publish.xml"
 
 if [[ -f "${PUBLISH_FILE}" ]]; then
@@ -15,11 +12,19 @@ if [[ -f "${PUBLISH_FILE}" ]]; then
   echo "已从 publish.xml 移除插件配置。备份：${BACKUP_FILE}"
 fi
 
-if [[ -d "${DEST_DIR}" ]]; then
-  rm -rf "${DEST_DIR}"
-  echo "已删除插件目录：${DEST_DIR}"
-else
-  echo "未发现插件目录：${DEST_DIR}"
+REMOVED=0
+shopt -s nullglob
+for DEST_DIR in "${ADDON_ROOT}/${PLUGIN_NAME}_"*; do
+  if [[ -d "${DEST_DIR}" ]]; then
+    rm -rf "${DEST_DIR}"
+    echo "已删除插件目录：${DEST_DIR}"
+    REMOVED=1
+  fi
+done
+shopt -u nullglob
+
+if [[ "${REMOVED}" -eq 0 ]]; then
+  echo "未发现 ${PLUGIN_NAME} 插件目录。"
 fi
 
 echo "卸载完成。请完全退出并重新打开 WPS。"
