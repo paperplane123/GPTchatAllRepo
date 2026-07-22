@@ -4,6 +4,8 @@
   var MAX_PARAGRAPHS = 5000;
   var READ_CHUNK_SIZE = 60;
   var SETTINGS_KEY = "wps-mac-reader-settings-v1";
+  var NATIVE_READING_COMMAND = "ViewFullScreenReadingView";
+  var PANE_STORAGE_KEY = "wpsMacReaderPaneId";
 
   var elements = {
     documentName: document.getElementById("documentName"),
@@ -99,6 +101,76 @@
       }
     }
     return undefined;
+  }
+
+  function resolveStoredTaskPane(app) {
+    if (!app.PluginStorage || typeof app.PluginStorage.getItem !== "function" || typeof app.GetTaskPane !== "function") {
+      return null;
+    }
+
+    var paneId = app.PluginStorage.getItem(PANE_STORAGE_KEY);
+    if (paneId === undefined || paneId === null || paneId === "") {
+      return null;
+    }
+
+    try {
+      return app.GetTaskPane(Number(paneId));
+    } catch (numberError) {
+      return app.GetTaskPane(paneId);
+    }
+  }
+
+  function closeReaderPane() {
+    try {
+      var app = resolveWpsApplication();
+      var pane = resolveStoredTaskPane(app);
+      if (pane) {
+        pane.Visible = false;
+        return true;
+      }
+    } catch (error) {
+      // Fall back to the host callback or embedded window close.
+    }
+
+    var result = callHostFunction("CloseReaderPane");
+    if (result === undefined) {
+      window.close();
+    }
+    return result !== false;
+  }
+
+  function enterNativeReadingMode() {
+    try {
+      var app = resolveWpsApplication();
+      if (!app.ActiveDocument) {
+        throw new Error("请先打开一个 WPS 文字文档。");
+      }
+      if (!app.CommandBars || typeof app.CommandBars.ExecuteMso !== "function") {
+        throw new Error("当前 WPS 构建没有暴露原生阅读命令接口。");
+      }
+      if (typeof app.CommandBars.GetEnabledMso === "function" && app.CommandBars.GetEnabledMso(NATIVE_READING_COMMAND) === false) {
+        throw new Error("当前 WPS 构建禁用了原生阅读版式命令。");
+      }
+
+      app.CommandBars.ExecuteMso(NATIVE_READING_COMMAND);
+      try {
+        var view = app.ActiveDocument.ActiveWindow.View;
+        view.ReadingLayoutAllowEditing = false;
+        view.ReadingLayoutAllowMultiplePages = false;
+        view.ReadingLayoutActualView = false;
+      } catch (viewError) {
+        // The command can still work without exposing every view property.
+      }
+      closeReaderPane();
+      return true;
+    } catch (error) {
+      var hostResult = callHostFunction("EnterNativeReadingMode");
+      if (hostResult === undefined || hostResult === false) {
+        setStatus("原生阅读不可用：" + (error && error.message ? error.message : String(error)), true);
+        return false;
+      }
+      return true;
+    }
   }
 
   function cleanParagraphText(value) {
@@ -362,18 +434,8 @@
       saveSettings();
     });
     elements.refreshButton.addEventListener("click", loadActiveDocument);
-    elements.nativeReaderButton.addEventListener("click", function () {
-      var result = callHostFunction("EnterNativeReadingMode");
-      if (result === undefined) {
-        setStatus("无法从任务窗格调用原生阅读命令，请使用功能区中的“原生阅读”。", true);
-      }
-    });
-    elements.closeButton.addEventListener("click", function () {
-      var result = callHostFunction("CloseReaderPane");
-      if (result === undefined) {
-        window.close();
-      }
-    });
+    elements.nativeReaderButton.addEventListener("click", enterNativeReadingMode);
+    elements.closeButton.addEventListener("click", closeReaderPane);
 
     var themeButtons = document.querySelectorAll("[data-theme-value]");
     for (var i = 0; i < themeButtons.length; i += 1) {
@@ -389,10 +451,7 @@
         if (elements.tocPanel.classList.contains("is-open")) {
           setTocOpen(false);
         } else {
-          var result = callHostFunction("CloseReaderPane");
-          if (result === undefined) {
-            window.close();
-          }
+          closeReaderPane();
         }
       }
       if ((event.metaKey || event.ctrlKey) && (event.key === "+" || event.key === "=")) {
