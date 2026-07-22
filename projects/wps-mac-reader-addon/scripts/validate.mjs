@@ -6,7 +6,7 @@ import { spawnSync } from "node:child_process";
 const scriptDir = dirname(fileURLToPath(import.meta.url));
 const projectRoot = resolve(scriptDir, "..");
 const pluginName = "WPS_MAC_READER";
-const pluginVersion = "0.1.0";
+const pluginVersion = "0.2.0";
 const pluginFolder = `${pluginName}_${pluginVersion}`;
 const pluginRoot = join(projectRoot, "package", pluginFolder);
 
@@ -17,10 +17,7 @@ const requiredFiles = [
   "package.json",
   "package/publish.xml",
   `package/${pluginFolder}/ribbon.xml`,
-  `package/${pluginFolder}/main.js`,
-  `package/${pluginFolder}/reader.html`,
-  `package/${pluginFolder}/reader.css`,
-  `package/${pluginFolder}/reader.js`
+  `package/${pluginFolder}/main.js`
 ];
 
 const failures = [];
@@ -51,13 +48,14 @@ if (existsSync(join(pluginRoot, "index.html"))) {
 const publishXml = read("package/publish.xml");
 const ribbonXml = read(`package/${pluginFolder}/ribbon.xml`);
 const mainJs = read(`package/${pluginFolder}/main.js`);
-const readerHtml = read(`package/${pluginFolder}/reader.html`);
+const installSh = read("install.sh");
 
 const expectedManifestFragments = [
   `name="${pluginName}"`,
   `version="${pluginVersion}"`,
   'type="wps"',
-  'url="file://"'
+  'url="file://"',
+  'install="null"'
 ];
 for (const fragment of expectedManifestFragments) {
   if (!publishXml.includes(fragment)) {
@@ -69,27 +67,40 @@ if (!publishXml.includes("<jsplugins>") || !publishXml.includes("</jsplugins>"))
   fail("publish.xml 缺少 jsplugins 根节点。")
 }
 
-if (!ribbonXml.includes("ViewFullScreenReadingView")) {
-  fail("ribbon.xml 未引用原生阅读命令 ViewFullScreenReadingView。")
+for (const nativeCommand of ["ViewFullScreenReadingView", "ViewPrintLayoutView"]) {
+  if (!ribbonXml.includes(`idMso="${nativeCommand}"`)) {
+    fail(`ribbon.xml 缺少不依赖 JavaScript 的原生命令：${nativeCommand}`);
+  }
 }
 
-const callbackNames = [...ribbonXml.matchAll(/onAction="([A-Za-z_$][\w$]*)"/g)].map((match) => match[1]);
-const onLoadMatch = ribbonXml.match(/onLoad="([A-Za-z_$][\w$]*)"/);
-if (onLoadMatch) {
-  callbackNames.push(onLoadMatch[1]);
-}
-for (const callbackName of new Set(callbackNames)) {
+for (const callbackName of ["EnterStrictReadOnlyMode", "ExitStrictReadOnlyMode", "ReapplyReadOnlyLock"]) {
+  if (!ribbonXml.includes(`onAction="${callbackName}"`)) {
+    fail(`ribbon.xml 缺少回调：${callbackName}`);
+  }
   const functionPattern = new RegExp(`function\\s+${callbackName}\\s*\\(`);
-  const windowPattern = new RegExp(`window\\.${callbackName}\\s*=`);
-  if (!functionPattern.test(mainJs) && !windowPattern.test(mainJs)) {
-    fail(`ribbon.xml 回调 ${callbackName} 未在 main.js 中实现。`);
+  if (!functionPattern.test(mainJs)) {
+    fail(`main.js 未实现回调：${callbackName}`);
   }
 }
 
-for (const asset of ["reader.css", "reader.js"]) {
-  if (!readerHtml.includes(asset)) {
-    fail(`reader.html 未引用 ${asset}。`);
-  }
+if (!mainJs.includes("ReadingLayoutAllowEditing = false")) {
+  fail("main.js 未显式禁止阅读版式编辑。")
+}
+
+if (!mainJs.includes("wps.Application")) {
+  fail("main.js 未兼容部分 Mac 构建使用 wps.Application 的情况。")
+}
+
+if (/\bwindow\s*\./.test(mainJs)) {
+  fail("main.js 不应依赖 window；Mac 隐藏加载上下文可能不提供标准 window。")
+}
+
+if (!installSh.includes(`PLUGIN_VERSION="${pluginVersion}"`)) {
+  fail(`install.sh 未使用版本 ${pluginVersion}。`)
+}
+
+if (!installSh.includes('"${ADDON_ROOT}/${PLUGIN_NAME}_"*')) {
+  fail("install.sh 未清理旧版本插件目录。")
 }
 
 function run(command, args, description) {
@@ -103,16 +114,15 @@ function run(command, args, description) {
 }
 
 run(process.execPath, ["--check", join(pluginRoot, "main.js")], "main.js 语法校验");
-run(process.execPath, ["--check", join(pluginRoot, "reader.js")], "reader.js 语法校验");
 run("bash", ["-n", join(projectRoot, "install.sh")], "install.sh 语法校验");
 run("bash", ["-n", join(projectRoot, "uninstall.sh")], "uninstall.sh 语法校验");
 
 if (failures.length > 0) {
-  console.error("WPS Mac 纯阅读加载项校验失败：");
+  console.error("WPS Mac 严格只读阅读加载项校验失败：");
   for (const failure of failures) {
     console.error(`- ${failure}`);
   }
   process.exit(1);
 }
 
-console.log("WPS Mac 纯阅读加载项静态校验通过。")
+console.log("WPS Mac 严格只读阅读加载项静态校验通过。")
