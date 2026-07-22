@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WPS 纯阅读</title>
+  <link rel="stylesheet" href="reader.css">
+</head>
+<body data-theme="sepia">
+  <header class="reader-toolbar">
+    <div class="reader-brand">
+      <strong>纯阅读</strong>
+      <span id="documentName" class="document-name">正在读取文档…</span>
+    </div>
+
+    <div class="reader-actions" aria-label="阅读设置">
+      <button id="toggleTocButton" type="button" title="显示或隐藏目录">目录</button>
+      <div class="theme-switcher" role="group" aria-label="阅读主题">
+        <button type="button" data-theme-value="light" title="浅色主题">浅</button>
+        <button type="button" data-theme-value="sepia" title="米黄主题">暖</button>
+        <button type="button" data-theme-value="dark" title="深色主题">深</button>
+      </div>
+      <button id="decreaseFontButton" type="button" title="减小字号">A−</button>
+      <button id="increaseFontButton" type="button" title="增大字号">A+</button>
+      <label class="range-control" title="行距">
+        <span>行距</span>
+        <input id="lineHeightInput" type="range" min="1.4" max="2.4" step="0.1" value="1.8">
+      </label>
+      <label class="range-control" title="正文宽度">
+        <span>宽度</span>
+        <input id="contentWidthInput" type="range" min="520" max="1000" step="20" value="720">
+      </label>
+      <button id="nativeReaderButton" type="button" title="尝试 WPS 原生阅读版式">原生</button>
+      <button id="refreshButton" type="button" title="重新读取当前文档">刷新</button>
+      <button id="closeButton" type="button" title="关闭阅读器（Esc）">关闭</button>
+    </div>
+  </header>
+
+  <div class="reader-layout">
+    <aside id="tocPanel" class="toc-panel" aria-label="文档目录">
+      <div class="toc-header">
+        <strong>目录</strong>
+        <button id="closeTocButton" type="button" aria-label="关闭目录">×</button>
+      </div>
+      <nav id="tocList" class="toc-list"></nav>
+    </aside>
+
+    <main id="readerViewport" class="reader-viewport">
+      <div id="statusMessage" class="status-message" role="status" aria-live="polite">正在连接 WPS 文档接口…</div>
+      <article id="readerContent" class="reader-content" aria-label="文档正文"></article>
+    </main>
+  </div>
+
+  <script src="reader.js"></script>
+</body>
+</html>
