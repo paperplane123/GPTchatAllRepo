@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<customUI xmlns="http://schemas.microsoft.com/office/2006/01/customui" onLoad="OnAddInLoad">
+  <ribbon startFromScratch="false">
+    <tabs>
+      <tab id="WpsMacReaderTab" label="纯阅读">
+        <group id="WpsMacReaderGroup" label="阅读模式">
+          <button
+            id="WpsMacReaderNative"
+            label="原生阅读"
+            size="large"
+            imageMso="ViewFullScreenReadingView"
+            onAction="EnterNativeReadingMode"
+            screentip="尝试打开 WPS 内置阅读版式"
+            supertip="调用隐藏命令 ViewFullScreenReadingView；命令不可用时自动尝试打开纯阅读器。"/>
+          <button
+            id="WpsMacReaderPane"
+            label="打开阅读器"
+            size="large"
+            imageMso="ViewFullScreenView"
+            onAction="OpenReaderPane"
+            screentip="打开纯文本阅读窗格"
+            supertip="从当前文档读取正文和标题，提供主题、字号、行距、正文宽度和目录。"/>
+          <button
+            id="WpsMacReaderRefresh"
+            label="重新读取"
+            imageMso="RefreshAll"
+            onAction="RefreshReaderPane"
+            screentip="重新读取当前文档"/>
+          <button
+            id="WpsMacReaderExit"
+            label="退出阅读"
+            imageMso="ViewPrintLayoutView"
+            onAction="ExitReadingMode"
+            screentip="关闭阅读窗格并恢复页面视图"/>
+        </group>
+      </tab>
+    </tabs>
+  </ribbon>
+</customUI>
