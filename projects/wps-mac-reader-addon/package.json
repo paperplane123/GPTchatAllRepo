@@ -1,8 +1,8 @@
 {
   "name": "wps-mac-reader-addon",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
-  "description": "A lightweight reading-mode add-in for WPS Writer on macOS.",
+  "description": "A strict non-editable reading-mode add-in for WPS Writer on macOS.",
   "scripts": {
     "test": "node scripts/validate.mjs"
   },
