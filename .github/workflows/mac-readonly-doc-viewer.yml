@@ -1,0 +1,24 @@
+name: Validate macOS read-only document viewer
+
+on:
+  push:
+    paths:
+      - "projects/mac-readonly-doc-viewer/**"
+      - ".github/workflows/mac-readonly-doc-viewer.yml"
+  pull_request:
+    paths:
+      - "projects/mac-readonly-doc-viewer/**"
+      - ".github/workflows/mac-readonly-doc-viewer.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Run static validation
+        working-directory: projects/mac-readonly-doc-viewer
+        run: bash test.sh
