@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<customUI xmlns="http://schemas.microsoft.com/office/2006/01/customui">
+  <ribbon startFromScratch="false">
+    <tabs>
+      <tab id="WpsMacReaderTab" label="纯阅读">
+        <group id="WpsMacReaderStrictGroup" label="严格只读">
+          <button
+            id="WpsMacReaderStrictEnter"
+            label="进入只读阅读"
+            size="large"
+            imageMso="ViewFullScreenReadingView"
+            onAction="EnterStrictReadOnlyMode"
+            screentip="进入不可编辑的阅读版式"
+            supertip="切换到阅读版式，并将 ReadingLayoutAllowEditing 设为 false；只改变当前窗口视图，不保护、不保存、不修改文档。"/>
+          <button
+            id="WpsMacReaderRelock"
+            label="重新锁定编辑"
+            imageMso="ProtectDocument"
+            onAction="ReapplyReadOnlyLock"
+            screentip="再次禁止阅读版式中的正文编辑"/>
+          <button
+            id="WpsMacReaderStrictExit"
+            label="退出只读阅读"
+            size="large"
+            imageMso="ViewPrintLayoutView"
+            onAction="ExitStrictReadOnlyMode"
+            screentip="恢复普通页面视图"/>
+        </group>
+        <group id="WpsMacReaderNativeGroup" label="原生命令备用">
+          <toggleButton
+            idMso="ViewFullScreenReadingView"
+            size="large"/>
+          <toggleButton
+            idMso="ViewPrintLayoutView"
+            size="large"/>
+        </group>
+      </tab>
+    </tabs>
+  </ribbon>
+</customUI>
