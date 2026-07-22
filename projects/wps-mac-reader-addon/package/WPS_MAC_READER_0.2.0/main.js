@@ -46,6 +46,15 @@ function getActiveReaderView(app) {
   return app.ActiveDocument.ActiveWindow.View;
 }
 
+function readViewType(view) {
+  try {
+    var value = Number(view.Type);
+    return isNaN(value) ? null : value;
+  } catch (ignored) {
+    return null;
+  }
+}
+
 function setReadOnlyReadingProperties(view) {
   var applied = false;
 
@@ -72,31 +81,59 @@ function setReadOnlyReadingProperties(view) {
 }
 
 function enterReadingLayout(app, view) {
-  var entered = false;
+  // WPS officially documents View.Type as writable. Verify the state after assignment
+  // instead of assuming that a silent COM-proxy assignment succeeded.
+  try {
+    view.Type = WD_READING_VIEW;
+    if (readViewType(view) === WD_READING_VIEW) {
+      return true;
+    }
+  } catch (ignoredViewType) {
+    // Fall through.
+  }
 
-  // Preferred path: switch the View object directly.
   try {
     view.ReadingLayout = true;
-    entered = true;
-  } catch (ignoredReadingLayout) {
-    // Fall through to Type or the built-in command.
-  }
-
-  if (!entered) {
-    try {
-      view.Type = WD_READING_VIEW;
-      entered = true;
-    } catch (ignoredViewType) {
-      // Fall through to the built-in command.
+    if (view.ReadingLayout === true || readViewType(view) === WD_READING_VIEW) {
+      return true;
     }
+  } catch (ignoredReadingLayout) {
+    // Fall through.
   }
 
-  if (!entered && app.CommandBars && typeof app.CommandBars.ExecuteMso === "function") {
+  if (app.CommandBars && typeof app.CommandBars.ExecuteMso === "function") {
     app.CommandBars.ExecuteMso(READING_COMMAND);
-    entered = true;
+    return true;
   }
 
-  return entered;
+  return false;
+}
+
+function exitReadingLayout(app, view) {
+  try {
+    view.Type = WD_PRINT_VIEW;
+    if (readViewType(view) === WD_PRINT_VIEW) {
+      return true;
+    }
+  } catch (ignoredViewType) {
+    // Fall through.
+  }
+
+  try {
+    view.ReadingLayout = false;
+    if (view.ReadingLayout === false || readViewType(view) === WD_PRINT_VIEW) {
+      return true;
+    }
+  } catch (ignoredReadingLayout) {
+    // Fall through.
+  }
+
+  if (app.CommandBars && typeof app.CommandBars.ExecuteMso === "function") {
+    app.CommandBars.ExecuteMso(PRINT_COMMAND);
+    return true;
+  }
+
+  return false;
 }
 
 function EnterStrictReadOnlyMode(control) {
@@ -131,30 +168,8 @@ function ExitStrictReadOnlyMode(control) {
   try {
     var app = getReaderApplication();
     var view = getActiveReaderView(app);
-    var exited = false;
 
-    try {
-      view.ReadingLayout = false;
-      exited = true;
-    } catch (ignoredReadingLayout) {
-      // Fall through.
-    }
-
-    if (!exited) {
-      try {
-        view.Type = WD_PRINT_VIEW;
-        exited = true;
-      } catch (ignoredViewType) {
-        // Fall through.
-      }
-    }
-
-    if (!exited && app.CommandBars && typeof app.CommandBars.ExecuteMso === "function") {
-      app.CommandBars.ExecuteMso(PRINT_COMMAND);
-      exited = true;
-    }
-
-    if (!exited) {
+    if (!exitReadingLayout(app, view)) {
       throw new Error("当前 WPS Mac 构建无法恢复页面视图。");
     }
 
@@ -175,7 +190,9 @@ function ReapplyReadOnlyLock(control) {
   try {
     var app = getReaderApplication();
     var view = getActiveReaderView(app);
-    setReadOnlyReadingProperties(view);
+    if (!setReadOnlyReadingProperties(view)) {
+      throw new Error("当前 WPS Mac 构建没有暴露 ReadingLayoutAllowEditing 属性。");
+    }
     return true;
   } catch (error) {
     showReaderError("重新锁定编辑失败：" + (error && error.message ? error.message : String(error)));
