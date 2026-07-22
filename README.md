@@ -8,6 +8,7 @@
 - [`projects/wechat-flow-agent`](projects/wechat-flow-agent)：面向中文工作群的本地信息流助手，提取摘要、待办、风险、决策和未决问题。
 - [`projects/etap-low-voltage-agent`](projects/etap-low-voltage-agent)：面向低压配电网问题点的 ETAP 批量仿真、指标校核与治理方案排序 PoC。
 - [`projects/low-voltage-governance-product`](projects/low-voltage-governance-product)：低电压治理智能决策专家的产品方案、交互原型及单点治理闭环设计。
+- [`projects/wps-mac-reader-addon`](projects/wps-mac-reader-addon)：为 WPS 文字 Mac 版补充原生阅读命令入口和可调主题、字号、行距、正文宽度及目录的纯阅读窗格。
 
 ## 仓库约定
 

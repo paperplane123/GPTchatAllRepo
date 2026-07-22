@@ -1,0 +1,28 @@
+name: Validate WPS Mac reader add-in
+
+on:
+  push:
+    paths:
+      - "projects/wps-mac-reader-addon/**"
+      - ".github/workflows/wps-mac-reader-addon.yml"
+  pull_request:
+    paths:
+      - "projects/wps-mac-reader-addon/**"
+      - ".github/workflows/wps-mac-reader-addon.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Run static validation
+        working-directory: projects/wps-mac-reader-addon
+        run: npm test
