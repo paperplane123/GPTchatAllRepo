@@ -23,7 +23,7 @@
           <button
             id="WpsMacReaderRefresh"
             label="重新读取"
-            imageMso="RefreshAll"
+            imageMso="TableOfContentsUpdateClassic"
             onAction="RefreshReaderPane"
             screentip="重新读取当前文档"/>
           <button
