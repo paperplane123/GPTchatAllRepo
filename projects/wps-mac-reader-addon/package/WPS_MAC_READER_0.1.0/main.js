@@ -2,6 +2,7 @@
 
 var WPS_READER_NATIVE_COMMAND = "ViewFullScreenReadingView";
 var WPS_READER_PRINT_COMMAND = "ViewPrintLayoutView";
+var WPS_READER_PANE_STORAGE_KEY = "wpsMacReaderPaneId";
 var WPS_READER_PANE_WIDTH = 620;
 var wpsReaderRibbonUI = null;
 var wpsReaderPane = null;
@@ -37,6 +38,42 @@ function showWpsReaderMessage(message) {
   }
   if (typeof window.alert === "function") {
     window.alert(message);
+  }
+}
+
+function rememberReaderPane(app, pane) {
+  try {
+    if (app.PluginStorage && typeof app.PluginStorage.setItem === "function" && pane && pane.ID !== undefined) {
+      app.PluginStorage.setItem(WPS_READER_PANE_STORAGE_KEY, String(pane.ID));
+    }
+  } catch (error) {
+    // PluginStorage is optional on older builds.
+  }
+}
+
+function recoverReaderPane(app) {
+  if (wpsReaderPane) {
+    return wpsReaderPane;
+  }
+
+  try {
+    if (!app.PluginStorage || typeof app.PluginStorage.getItem !== "function" || typeof app.GetTaskPane !== "function") {
+      return null;
+    }
+
+    var paneId = app.PluginStorage.getItem(WPS_READER_PANE_STORAGE_KEY);
+    if (paneId === undefined || paneId === null || paneId === "") {
+      return null;
+    }
+
+    try {
+      wpsReaderPane = app.GetTaskPane(Number(paneId));
+    } catch (numberError) {
+      wpsReaderPane = app.GetTaskPane(paneId);
+    }
+    return wpsReaderPane || null;
+  } catch (error) {
+    return null;
   }
 }
 
@@ -120,9 +157,11 @@ function OpenReaderPane() {
       throw new Error("请先打开一个 WPS 文字文档。");
     }
 
-    if (wpsReaderPane) {
+    var existingPane = recoverReaderPane(app);
+    if (existingPane) {
       try {
-        wpsReaderPane.Visible = true;
+        existingPane.Visible = true;
+        rememberReaderPane(app, existingPane);
         return true;
       } catch (error) {
         wpsReaderPane = null;
@@ -140,6 +179,7 @@ function OpenReaderPane() {
     } catch (error) {
       // Width is optional on some builds.
     }
+    rememberReaderPane(app, wpsReaderPane);
     wpsReaderPane.Visible = true;
     return true;
   } catch (error) {
@@ -149,11 +189,12 @@ function OpenReaderPane() {
 }
 
 function CloseReaderPane() {
-  if (!wpsReaderPane) {
-    return true;
-  }
   try {
-    wpsReaderPane.Visible = false;
+    var app = getWpsApplication();
+    var pane = recoverReaderPane(app);
+    if (pane) {
+      pane.Visible = false;
+    }
   } catch (error) {
     wpsReaderPane = null;
   }
@@ -161,14 +202,20 @@ function CloseReaderPane() {
 }
 
 function RefreshReaderPane() {
-  if (wpsReaderPane) {
-    try {
-      wpsReaderPane.Visible = false;
-    } catch (error) {
-      // Recreate below.
+  try {
+    var app = getWpsApplication();
+    var pane = recoverReaderPane(app);
+    if (pane) {
+      try {
+        pane.Visible = false;
+      } catch (error) {
+        // Recreate below.
+      }
     }
-    wpsReaderPane = null;
+  } catch (error) {
+    // Recreate below.
   }
+  wpsReaderPane = null;
   return OpenReaderPane();
 }
 
