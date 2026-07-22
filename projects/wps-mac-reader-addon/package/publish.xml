@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jsplugins>
-  <jsplugin name="WPS_MAC_READER" enable="enable_dev" url="file://" type="wps" version="0.1.0"/>
+  <jsplugin name="WPS_MAC_READER" enable="enable_dev" url="file://" type="wps" version="0.2.0" install="null"/>
 </jsplugins>
