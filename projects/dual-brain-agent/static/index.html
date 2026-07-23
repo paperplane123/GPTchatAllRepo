@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dual-Brain Agent</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <main class="shell">
+    <header class="hero">
+      <div>
+        <p class="eyebrow">DUAL-SYSTEM AGENT MVP</p>
+        <h1>双脑智能体</h1>
+        <p class="subtitle">右脑负责突破，左脑负责证伪，仲裁器负责落地。</p>
+      </div>
+      <div id="modeBadge" class="badge">检测模式中</div>
+    </header>
+
+    <section class="composer panel">
+      <label for="task">任务</label>
+      <textarea id="task" rows="4">为配电网故障诊断智能体设计一个两周内可验证的 MVP。</textarea>
+
+      <div class="two-col">
+        <div>
+          <label for="context">上下文</label>
+          <textarea id="context" rows="5">已有拓扑、稳态量、部分告警数据；暂态量不完整。目标是先验证场景是否可诊断。</textarea>
+        </div>
+        <div>
+          <label for="constraints">约束（每行一条）</label>
+          <textarea id="constraints" rows="5">不能虚构数据接口
+结论必须可验收
+优先使用现有 Python 技术栈</textarea>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button id="runButton" type="button">启动双脑推演</button>
+        <span id="status" class="status">待命</span>
+      </div>
+    </section>
+
+    <section id="results" class="results hidden" aria-live="polite">
+      <article class="brain-card right-card">
+        <div class="card-head">
+          <span class="brain-icon">R</span>
+          <div><p>RIGHT BRAIN</p><h2>发散与突破</h2></div>
+          <span id="rightConfidence" class="confidence"></span>
+        </div>
+        <div id="rightOutput"></div>
+      </article>
+
+      <article class="brain-card left-card">
+        <div class="card-head">
+          <span class="brain-icon">L</span>
+          <div><p>LEFT BRAIN</p><h2>验证与约束</h2></div>
+          <span id="leftConfidence" class="confidence"></span>
+        </div>
+        <div id="leftOutput"></div>
+      </article>
+
+      <article class="brain-card arbiter-card">
+        <div class="card-head">
+          <span class="brain-icon">A</span>
+          <div><p>ARBITER</p><h2>最终决策</h2></div>
+          <span id="arbiterConfidence" class="confidence"></span>
+        </div>
+        <div id="arbiterOutput"></div>
+        <footer id="runMeta" class="run-meta"></footer>
+      </article>
+    </section>
+  </main>
+
+  <script src="/app.js" defer></script>
+</body>
+</html>
