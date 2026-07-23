@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "geo-style-map-agent"
+version = "0.1.0"
+description = "Generate topology-faithful SVG map basemaps and image-model prompt packages from OpenStreetMap data."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "paperplane123" }]
+dependencies = []
+
+[project.scripts]
+geo-style-map = "geo_style_map.cli:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
