@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dual-brain-agent"
+version = "0.1.0"
+description = "A dual-system agent: divergent right brain + analytical left brain + arbiter."
+readme = "README.md"
+requires-python = ">=3.11"
+authors = [{ name = "paperplane123" }]
+dependencies = []
+
+[project.scripts]
+dual-brain = "dual_brain.server:main"
+
+[tool.setuptools]
+packages = ["dual_brain"]
