@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="见一面：不刷人，每周认真认识一个人。" />
+  <title>见一面</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="app-shell" aria-live="polite">
+    <header class="topbar">
+      <button class="brand" id="brandButton" type="button" aria-label="返回首页">
+        <span class="brand-mark">见</span>
+        <span>见一面</span>
+      </button>
+      <button class="ghost-button" id="resetButton" type="button">重置演示</button>
+    </header>
+
+    <section id="screen-home" class="screen active">
+      <div class="hero">
+        <div class="eyebrow">不左滑，也不右滑</div>
+        <h1>每周只认真<br />认识一个人</h1>
+        <p>先和 AI 聊几分钟。我们不卖无限选择，只在双方都愿意见面时，帮你把约会安排好。</p>
+      </div>
+
+      <div class="principles">
+        <article>
+          <strong>3 分钟</strong>
+          <span>AI 访谈建档</span>
+        </article>
+        <article>
+          <strong>1 个人</strong>
+          <span>每周唯一推荐</span>
+        </article>
+        <article>
+          <strong>0 滑动</strong>
+          <span>直接走向线下</span>
+        </article>
+      </div>
+
+      <button class="primary-button" id="startButton" type="button">开始认识自己</button>
+      <p class="fine-print">演示版仅面向成年人，不采集真实身份信息。</p>
+    </section>
+
+    <section id="screen-interview" class="screen">
+      <div class="progress-row">
+        <span>AI 访谈</span>
+        <span id="progressText">1 / 5</span>
+      </div>
+      <div class="progress-track"><div id="progressFill"></div></div>
+
+      <div class="chat-panel">
+        <div class="ai-avatar">见</div>
+        <div>
+          <div class="speaker">你的 AI 红娘</div>
+          <p id="questionText" class="question"></p>
+        </div>
+      </div>
+
+      <div id="answerOptions" class="answer-options"></div>
+      <textarea id="freeAnswer" rows="3" maxlength="120" placeholder="也可以用自己的话说说"></textarea>
+
+      <div class="button-row">
+        <button class="secondary-button" id="backQuestionButton" type="button">上一步</button>
+        <button class="primary-button" id="nextQuestionButton" type="button">继续</button>
+      </div>
+    </section>
+
+    <section id="screen-profile" class="screen">
+      <div class="section-heading">
+        <div class="eyebrow">访谈完成</div>
+        <h2>这可能是你的关系画像</h2>
+        <p>不是给你贴标签，而是帮助系统理解你更适合怎样的相处方式。</p>
+      </div>
+
+      <div class="profile-card">
+        <div class="profile-orbit">
+          <span>慢热</span><span>真诚</span><span>稳定</span>
+        </div>
+        <h3>温和的深度连接者</h3>
+        <p>你更在意能否安心表达、是否言行一致，以及两个人能不能在日常里逐渐靠近。</p>
+        <ul>
+          <li><span>关系节奏</span><strong>先了解，再投入</strong></li>
+          <li><span>理想约会</span><strong>安静咖啡馆或散步</strong></li>
+          <li><span>核心期待</span><strong>稳定回应与真实交流</strong></li>
+        </ul>
+      </div>
+
+      <button class="primary-button" id="findMatchButton" type="button">查看本周推荐</button>
+    </section>
+
+    <section id="screen-match" class="screen">
+      <div class="section-heading compact">
+        <div class="eyebrow">本周唯一推荐</div>
+        <h2>林夏，29 岁</h2>
+        <p>广州 · 产品设计师</p>
+      </div>
+
+      <div class="match-card">
+        <div class="portrait" role="img" aria-label="抽象人物头像">
+          <span>夏</span>
+        </div>
+        <div class="match-score"><strong>86%</strong><span>相处适配度</span></div>
+        <blockquote>“我喜欢有边界感的亲密，也喜欢两个人一起把普通周末过得有意思。”</blockquote>
+        <div class="reason-list">
+          <div><span>你们都重视</span><strong>稳定回应</strong></div>
+          <div><span>互补之处</span><strong>她更主动，你更会倾听</strong></div>
+          <div><span>推荐场景</span><strong>书店附近喝咖啡</strong></div>
+        </div>
+      </div>
+
+      <div class="privacy-note">双方同意前，不开放自由聊天，也不交换联系方式。</div>
+      <div class="button-row">
+        <button class="secondary-button" id="passButton" type="button">这周先不见</button>
+        <button class="primary-button" id="acceptButton" type="button">愿意见一面</button>
+      </div>
+    </section>
+
+    <section id="screen-waiting" class="screen centered-screen">
+      <div class="pulse-ring"><span>✓</span></div>
+      <div class="eyebrow">意愿已送达</div>
+      <h2>不需要尬聊<br />等她做出选择</h2>
+      <p>演示中，对方将在几秒后同意。真实产品会通过短信或微信服务通知你。</p>
+      <div class="waiting-dots"><span></span><span></span><span></span></div>
+    </section>
+
+    <section id="screen-schedule" class="screen">
+      <div class="section-heading">
+        <div class="eyebrow success">双方都愿意见面</div>
+        <h2>选一个轻松的时间</h2>
+        <p>双方都提交后，系统只展示重合的时间，并推荐公共场所。</p>
+      </div>
+
+      <div class="choice-group">
+        <h3>时间</h3>
+        <div class="choice-grid" id="timeChoices">
+          <button type="button" data-value="周六 15:00">周六<br /><strong>15:00</strong></button>
+          <button type="button" data-value="周六 19:30">周六<br /><strong>19:30</strong></button>
+          <button type="button" data-value="周日 16:00">周日<br /><strong>16:00</strong></button>
+        </div>
+      </div>
+
+      <div class="choice-group">
+        <h3>见面偏好</h3>
+        <div class="venue-list" id="venueChoices">
+          <button type="button" data-value="安静咖啡馆"><span>☕</span><div><strong>安静咖啡馆</strong><small>适合第一次认真聊天</small></div></button>
+          <button type="button" data-value="公园散步"><span>🌿</span><div><strong>公园散步</strong><small>轻松、低压力</small></div></button>
+          <button type="button" data-value="小型书店"><span>📚</span><div><strong>小型书店</strong><small>有话题，也方便结束</small></div></button>
+        </div>
+      </div>
+
+      <button class="primary-button" id="confirmScheduleButton" type="button">提交可见时间</button>
+    </section>
+
+    <section id="screen-confirmed" class="screen">
+      <div class="ticket">
+        <div class="ticket-top">
+          <span>见一面 · 首次约会</span>
+          <strong>已确认</strong>
+        </div>
+        <div class="ticket-people">
+          <div class="mini-avatar">你</div>
+          <div class="connection-line"><span>♥</span></div>
+          <div class="mini-avatar accent">夏</div>
+        </div>
+        <h2 id="confirmedTime">周六 15:00</h2>
+        <p id="confirmedVenue">安静咖啡馆 · 系统将在双方确认后展示具体地址</p>
+        <div class="safety-grid">
+          <div><span>场所</span><strong>公共空间</strong></div>
+          <div><span>时长建议</span><strong>60–90 分钟</strong></div>
+          <div><span>费用</span><strong>见面成功后计费</strong></div>
+          <div><span>退出</span><strong>随时可结束</strong></div>
+        </div>
+      </div>
+
+      <div class="safety-card">
+        <strong>第一次见面，请把安全放在浪漫前面</strong>
+        <p>不要转账，不透露住址；可把行程分享给朋友，任何不适都可以立即离开。</p>
+      </div>
+
+      <button class="primary-button" id="finishButton" type="button">完成演示</button>
+    </section>
+
+    <section id="screen-finished" class="screen centered-screen">
+      <div class="finish-icon">见</div>
+      <div class="eyebrow">MVP 闭环完成</div>
+      <h2>我们卖的不是选择<br />而是一次真实见面</h2>
+      <p>下一步最重要的不是继续写功能，而是在一个城市找到首批 30–50 位真实用户，人工撮合并验证他们是否愿意赴约和付费。</p>
+      <button class="secondary-button" id="restartButton" type="button">再走一遍</button>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
