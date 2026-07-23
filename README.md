@@ -4,6 +4,7 @@
 
 ## 当前项目
 
+- [`projects/meet-once-mvp`](projects/meet-once-mvp)：反滑动 AI 约会产品原型，通过访谈建档、每周唯一推荐、双向同意和线下约见协调完成最小闭环。
 - [`projects/sleep-sense`](projects/sleep-sense)：基于 Android 公开传感器 API 的“躺下/睡眠准备姿态”检测与自动化触发 Demo。
 - [`projects/wechat-flow-agent`](projects/wechat-flow-agent)：面向中文工作群的本地信息流助手，提取摘要、待办、风险、决策和未决问题。
 - [`projects/etap-low-voltage-agent`](projects/etap-low-voltage-agent)：面向低压配电网问题点的 ETAP 批量仿真、指标校核与治理方案排序 PoC。
