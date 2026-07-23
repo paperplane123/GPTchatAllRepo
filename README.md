@@ -8,6 +8,7 @@
 - [`projects/wechat-flow-agent`](projects/wechat-flow-agent)：面向中文工作群的本地信息流助手，提取摘要、待办、风险、决策和未决问题。
 - [`projects/etap-low-voltage-agent`](projects/etap-low-voltage-agent)：面向低压配电网问题点的 ETAP 批量仿真、指标校核与治理方案排序 PoC。
 - [`projects/low-voltage-governance-product`](projects/low-voltage-governance-product)：低电压治理智能决策专家的产品方案、交互原型及单点治理闭环设计。
+- [`projects/geo-style-map-agent`](projects/geo-style-map-agent)：基于 OpenStreetMap 真实地理数据生成拓扑稳定 SVG，并为图像模型提供受控风格化提示包。
 - [`projects/mac-readonly-doc-viewer`](projects/mac-readonly-doc-viewer)：独立的 macOS 真只读文档查看器，使用系统 Quick Look 预览 Word/PDF，界面不提供正文编辑与保存入口。
 - [`projects/wps-mac-reader-addon`](projects/wps-mac-reader-addon)：WPS Mac 阅读加载项实验；在用户当前 WPS 构建中出现“选项卡可见但按钮完全不执行”，已停止作为推荐方案。
 
