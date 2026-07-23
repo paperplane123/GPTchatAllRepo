@@ -1,0 +1,10 @@
+{
+  "sender": {
+    "name": "寄件人姓名",
+    "mobile": "13800138000",
+    "address": "广东省深圳市南山区完整寄件地址"
+  },
+  "callback_url": "https://example.com/webhooks/kuaidi100/order",
+  "default_cargo": "文件",
+  "default_weight": "1"
+}
